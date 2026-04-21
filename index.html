@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Desmond Universe</title>
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        background: black;
+}
+canvas{
+    width: 100%;
+    height: 100%;
+}
+</style>
+</head>
+
+<body>
+    <canvas id="space"></canvas>
+ <script>
+const canvas = document.getElementById("space");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+ctx.fillStyle = "white";
+ctx.font = "30px Arial";
+ctx.fillText("Universe Loading...", 50, 50);
+
+
+let sun = {
+  x: canvas.width / 2,
+  y: canvas.height / 2,
+  mass: 5000,
+  radius: 25,
+  color: "yellow"
+};
+function drawSun() {
+  ctx.beginPath();
+  ctx.arc(sun.x, sun.y, sun.radius, 0, Math.PI * 2);
+  ctx.shadowBlur = 30;
+  ctx.shadowColor = "orange"
+  ctx.fillStyle = sun.color;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+}
+drawSun()
+const planets = [
+//     {
+//   x: sun.x + 200,
+//   y: sun.y,
+//   vx: 0,
+//   vy: 2,
+//   mass: 10,
+//   radius: 8,
+//   color: "blue"
+// }
+];
+function drawPlanet(p) {
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+  ctx.shadowBlur = 15;
+  ctx.shadowColor = p.color
+  ctx.fillStyle = p.color;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+}
+// drawPlanet()
+function loop() {
+
+ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+ctx.fillRect(0, 0, canvas.width, canvas.height)
+planets.forEach(planet => {
+
+    const dx = sun.x - planet.x;
+    const dy = sun.y - planet.y;
+
+const distance = Math.sqrt(dx * dx + dy * dy);
+const force =  sun.mass / (distance * distance);
+const ax = force * dx / distance ;
+const ay = force * dy / distance;
+
+planet.vx += ax;
+planet.vy += ay;
+
+planet.x += planet.vx;
+planet.y += planet.vy;
+
+});
+planets.forEach(drawPlanet)
+drawSun();
+
+  requestAnimationFrame(loop);
+}
+
+
+loop();
+canvas.addEventListener("click", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const dx = x - sun.x;
+    const dy = y - sun.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    // const speed = (0.2 * sun.mass / 10)  / (distance * distance);
+const speed = Math.sqrt(sun.mass / distance)
+    // const speed = Math.sqrt((0.2 * sun.mass / 10) / (distance * distance));
+    const vx = -dy / distance * speed;
+    const vy = dx / distance * speed;
+    planets.push({
+        x,
+        y,
+        vx,
+        vy,
+        mass: 5,
+        radius: 5,
+        color: `hsl(${Math.random() * 360}, 70%, 60% )`
+    })
+    console.log(planets);
+})
+</script> 
+</body>
+</html>
